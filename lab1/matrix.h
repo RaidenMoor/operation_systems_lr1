@@ -1,42 +1,42 @@
-#include <windows.h>
+п»ї#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 struct Matrix {
-    int n;             // Размерность матрицы (n x n)
-    int* data;         // Указатель на начало выделенной памяти
-    HANDLE heapHandle; // Дескриптор кучи, из которой выделялась память
+    int n;             
+    int* data;         // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ РІС‹РґРµР»РµРЅРЅРѕР№ РїР°РјСЏС‚Рё
+    HANDLE heapHandle; 
 };
 
 
 
-// Выделение памяти для матрицы
+// Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РґР»СЏ РјР°С‚СЂРёС†С‹
 struct Matrix* AllocateMatrix(int n, HANDLE heapHandle) {
     if (n <= 0) {
-        printf("Ошибка: Размерность матрицы должна быть положительной.\n");
+        printf("РћС€РёР±РєР°: Р Р°Р·РјРµСЂРЅРѕСЃС‚СЊ РјР°С‚СЂРёС†С‹ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕР№.\n");
         return NULL;
     }
 
     if (heapHandle == NULL) {
         heapHandle = GetProcessHeap();
         if (heapHandle == NULL) {
-            printf("Ошибка: Не удалось получить дескриптор кучи процесса.\n");
+            printf("РћС€РёР±РєР°: РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ РґРµСЃРєСЂРёРїС‚РѕСЂ РєСѓС‡Рё РїСЂРѕС†РµСЃСЃР°.\n");
             return NULL;
         }
     }
 
-    // Выделение памяти для данных матрицы
+    // Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РґР»СЏ РґР°РЅРЅС‹С… РјР°С‚СЂРёС†С‹
     int* allocatedMemory = (int*)HeapAlloc(heapHandle, HEAP_ZERO_MEMORY, n * n * sizeof(int));
     if (allocatedMemory == NULL) {
-        printf("Ошибка: Не удалось выделить память для матрицы размером %dx%d.\n", n, n);
+        printf("РћС€РёР±РєР°: РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ РјР°С‚СЂРёС†С‹ СЂР°Р·РјРµСЂРѕРј %dx%d.\n", n, n);
         return NULL;
     }
 
-    // Выделение памяти для структуры Matrix
+    // Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё РґР»СЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ Matrix
     struct Matrix* matrix = (struct Matrix*)malloc(sizeof(struct Matrix));
     if (matrix == NULL) {
-        printf("Ошибка: Не удалось выделить память для структуры Matrix.\n");
+        printf("РћС€РёР±РєР°: РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ СЃС‚СЂСѓРєС‚СѓСЂС‹ Matrix.\n");
         HeapFree(heapHandle, 0, allocatedMemory);
         return NULL;
     }
@@ -45,11 +45,11 @@ struct Matrix* AllocateMatrix(int n, HANDLE heapHandle) {
     matrix->data = allocatedMemory;
     matrix->heapHandle = heapHandle;
 
-    printf("Память для матрицы %dx%d успешно выделена.\n", n, n);
+    printf("РџР°РјСЏС‚СЊ РґР»СЏ РјР°С‚СЂРёС†С‹ %dx%d СѓСЃРїРµС€РЅРѕ РІС‹РґРµР»РµРЅР°.\n", n, n);
     return matrix;
 }
 
-// Освобождение памяти матрицы
+// РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё РјР°С‚СЂРёС†С‹
 void FreeMatrix(struct Matrix* matrix) {
     if (matrix == NULL) {
         return;
@@ -57,22 +57,22 @@ void FreeMatrix(struct Matrix* matrix) {
 
     if (matrix->data != NULL) {
         if (!HeapFree(matrix->heapHandle, 0, matrix->data)) {
-            printf("Предупреждение: Не удалось освободить память для данных матрицы.\n");
+            printf("РџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ: РќРµ СѓРґР°Р»РѕСЃСЊ РѕСЃРІРѕР±РѕРґРёС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ РґР°РЅРЅС‹С… РјР°С‚СЂРёС†С‹.\n");
         }
         else {
-            printf("Память для данных матрицы успешно освобождена.\n");
+            printf("РџР°РјСЏС‚СЊ РґР»СЏ РґР°РЅРЅС‹С… РјР°С‚СЂРёС†С‹ СѓСЃРїРµС€РЅРѕ РѕСЃРІРѕР±РѕР¶РґРµРЅР°.\n");
         }
         matrix->data = NULL;
     }
 
     free(matrix);
-    printf("Структура Matrix успешно освобождена.\n");
+    printf("РЎС‚СЂСѓРєС‚СѓСЂР° Matrix СѓСЃРїРµС€РЅРѕ РѕСЃРІРѕР±РѕР¶РґРµРЅР°.\n");
 }
 
-// Транспонирование матрицы
+// РўСЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
 void transposeMatrix(struct Matrix* matrix) {
     if (matrix == NULL || matrix->data == NULL || matrix->n <= 1) {
-        printf("Матрица не содержит данных\n");
+        printf("РњР°С‚СЂРёС†Р° РЅРµ СЃРѕРґРµСЂР¶РёС‚ РґР°РЅРЅС‹С…\n");
         return;
     }
 
@@ -87,10 +87,10 @@ void transposeMatrix(struct Matrix* matrix) {
     }
 }
 
-// Вывод матрицы
+// Р’С‹РІРѕРґ РјР°С‚СЂРёС†С‹
 void printMatrix(const struct Matrix* matrix) {
     if (matrix == NULL || matrix->data == NULL) {
-        printf("Матрица пустая\n");
+        printf("РњР°С‚СЂРёС†Р° РїСѓСЃС‚Р°СЏ\n");
         return;
     }
 
@@ -103,7 +103,7 @@ void printMatrix(const struct Matrix* matrix) {
     }
 }
 
-// Заполнение матрицы 
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°С‚СЂРёС†С‹ 
 void fillMatrixRandom(struct Matrix* matrix) {
     if (matrix == NULL || matrix->data == NULL) {
         return;
